@@ -51,21 +51,29 @@ Outstanding: All scenes/scripts/data are stubs — nothing runnable yet.
 
 ---
 
-### Phase 2 — Input Map + InputHelper 🔲
-**Target files**:
-- `project.godot` — add input actions: `move_up`, `move_down`, `move_left`, `move_right`, `aim_x` (axis), `aim_y` (axis), `fire_primary`, `confirm`, `cancel`, `pause`
-- `scripts/InputHelper.gd` — autoload singleton:
-  - `get_move_vector() -> Vector2`
-  - `get_aim_vector(player_pos: Vector2) -> Vector2`
-  - `is_confirm_pressed() -> bool`
-  - `is_cancel_pressed() -> bool`
-  - `is_pause_pressed() -> bool`
-  - `is_fire_held() -> bool`
+### Phase 2 — Input Map + InputHelper ✅
+**Completed**: 2026-03-04
 
-Notes:
-- Right stick uses `Input.get_joy_axis(0, JOY_AXIS_RIGHT_X/Y)`
-- Deadzone for stick aim: 0.15
-- Mouse aim: `(get_global_mouse_position() - player_pos).normalized()`
+Files created/modified:
+- `project.godot` — added 8 input actions + `[autoload]` for InputHelper + version bumped to 0.2.0
+- `scripts/InputHelper.gd` — autoload singleton with all documented methods
+
+Input actions registered:
+- `move_up` / `move_down` / `move_left` / `move_right`: keyboard only (W/A/S/D)
+  - Analog stick movement is handled directly in `get_move_vector()` via `Input.get_joy_axis()`
+  - Reason: action-based analog via `Input.get_axis()` loses full range above deadzone threshold
+- `fire_primary`: left mouse button, Space, right trigger (JoypadMotion axis 5)
+- `confirm`: Enter, A button (JoypadButton 0)
+- `cancel`: Escape, B button (JoypadButton 1)
+- `pause`: P, Escape, Start button (JoypadButton 6)
+  - Escape is on both `cancel` and `pause` intentionally; context determines which fires
+
+InputHelper decisions:
+- `get_move_vector()`: left stick (JOY_AXIS_LEFT_X/Y) first, WASD fallback
+- `get_aim_vector(player_pos)`: right stick (JOY_AXIS_RIGHT_X/Y) first, mouse fallback
+  - Mouse world position: `viewport.get_canvas_transform().affine_inverse() * viewport.get_mouse_position()`
+  - This correctly accounts for Camera2D offset without needing a node reference
+- No `aim_x`/`aim_y` action entries: right stick read directly, cleaner than action-based axis
 
 ---
 

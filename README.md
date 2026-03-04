@@ -83,7 +83,7 @@ library-survivors/
 | # | Phase                          | Status      |
 |---|--------------------------------|-------------|
 | 1 | Project skeleton + repo        | **Done**    |
-| 2 | Input map + InputHelper        | Pending     |
+| 2 | Input map + InputHelper        | **Done**    |
 | 3 | Player, Enemy, core Game.tscn  | Pending     |
 | 4 | XP/Leveling + HUD              | Pending     |
 | 5 | Upgrade Draft UI               | Pending     |
