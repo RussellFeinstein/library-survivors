@@ -1,8 +1,10 @@
 ; Engine configuration file.
 ; It's best edited using the editor UI and not directly,
-; but the user can also edit it manually.
-; (the "v" at the end is the file format version)
-[gd_resource type="ProjectSettings" format=3]
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
 
@@ -10,7 +12,7 @@ config_version=5
 
 config/name="Library Survivors"
 config/description="A top-down 2D survivors-like prototype with a library theme."
-config/version="0.3.3"
+config/version="0.3.4"
 run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/godot_version="4.6.1.stable"
@@ -23,6 +25,10 @@ InputHelper="*res://scripts/InputHelper.gd"
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+
+[gd_resource type="ProjectSettings" format=3]
+
+config_version=5
 
 [input]
 
