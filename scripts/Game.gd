@@ -26,6 +26,8 @@ const XP_ORB_SCENE     := preload("res://scenes/XpOrb.tscn")
 
 
 func _ready() -> void:
+	Input.set_custom_mouse_cursor(_make_crosshair(), Input.CURSOR_ARROW, Vector2(16.0, 16.0))
+
 	# ---- Player dependencies ----------------------------------------
 	# projectile_scene: Player._fire() calls .instantiate() on this.
 	#   Null-checked inside Player, so if missing the player just can't fire.
@@ -60,6 +62,20 @@ func _ready() -> void:
 	# Give the HUD a player reference so it can poll hp/xp/level each frame
 	# without requiring extra signals on the Player.
 	_hud.set_player(_player)
+
+
+# TODO: replace with a real crosshair asset once art is available.
+# Load it with: Input.set_custom_mouse_cursor(load("res://assets/crosshair.png"), ...)
+func _make_crosshair() -> ImageTexture:
+	const SIZE   := 32
+	const CENTER := 15   # pixel index of centre (0-based)
+	const GAP    := 4    # blank pixels each side of centre
+	var img := Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
+	for i in range(SIZE):
+		if i < CENTER - GAP or i > CENTER + GAP:
+			img.set_pixel(i, CENTER, Color.WHITE)  # horizontal
+			img.set_pixel(CENTER, i, Color.WHITE)  # vertical
+	return ImageTexture.create_from_image(img)
 
 
 func _on_player_died() -> void:
