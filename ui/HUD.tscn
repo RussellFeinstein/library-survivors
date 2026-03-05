@@ -5,6 +5,9 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xpfill"]
 bg_color = Color(1, 0.85, 0, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hpfill"]
+bg_color = Color(1, 0, 0, 1)
+
 [node name="HUD" type="CanvasLayer"]
 layer = 10
 script = ExtResource("1_hud")
@@ -27,6 +30,7 @@ size_flags_horizontal = 0
 max_value = 100.0
 value = 100.0
 show_percentage = false
+theme_override_styles/fill = SubResource("StyleBoxFlat_hpfill")
 
 [node name="Spacer" type="Control" parent="VBoxContainer/TopRow"]
 size_flags_horizontal = 3
