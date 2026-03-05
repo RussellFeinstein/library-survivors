@@ -27,6 +27,8 @@ A top-down 2D survivors-like prototype built in **Godot 4.x** with a library the
 
 > Fire mode: **hold-to-fire** — primary weapon fires continuously while held and cooldown has elapsed.
 
+> Upgrade draft: use **d-pad / left stick** to move between the 3 cards, **A / Enter** to confirm.
+
 ---
 
 ## Architecture Overview
@@ -39,7 +41,7 @@ library-survivors/
 │
 ├── scenes/                    # .tscn scene files
 │   ├── MainMenu.tscn          # [Phase 3] ✅ Start Run, Quit — controller navigable
-│   ├── Game.tscn              # [Phase 4] ✅ Core gameplay root (+ XpOrbContainer, HUD)
+│   ├── Game.tscn              # [Phase 5] ✅ Core gameplay root (+ UpgradeManager, UpgradeDraft)
 │   ├── Enemy.tscn             # [Phase 3] ✅ Enemy scene (instanced by EnemySpawner)
 │   ├── Projectile.tscn        # [Phase 3] ✅ Projectile scene (instanced by Player)
 │   ├── XpOrb.tscn             # [Phase 4] ✅ XP orb scene (dropped by enemies on death)
@@ -48,13 +50,13 @@ library-survivors/
 ├── scripts/                   # GDScript files (logic only, no scene nodes)
 │   ├── InputHelper.gd         # [Phase 2] ✅ Move/aim/confirm helpers (autoload)
 │   ├── MainMenu.gd            # [Phase 3] ✅ Menu button wiring
-│   ├── Game.gd                # [Phase 4] ✅ Wires all systems, handles game-over + level-up
+│   ├── Game.gd                # [Phase 5] ✅ Wires all systems; draft flow on level_up
 │   ├── Player.gd              # [Phase 4] ✅ Movement, HP, primary fire, XP/leveling
 │   ├── Enemy.gd               # [Phase 4] ✅ Chase AI, contact damage, death, XP drop
 │   ├── Projectile.gd          # [Phase 3] ✅ Travel, pierce, hit detection
 │   ├── EnemySpawner.gd        # [Phase 4] ✅ Timed spawning; injects orb scene/container
 │   ├── XpOrb.gd               # [Phase 4] ✅ Homing pickup, XP grant on contact
-│   ├── UpgradeManager.gd      # [Phase 5] Draft pool logic, effect application
+│   ├── UpgradeManager.gd      # [Phase 5] ✅ 11-upgrade inline pool; draft + apply
 │   ├── WeaponPrimary.gd       # [Phase 6] Data-driven primary weapon
 │   ├── WeaponSecondary.gd     # [Phase 6] Data-driven secondary weapon (auto)
 │   └── RunState.gd            # [Phase 7] Seed, timer, currency tallying
@@ -62,9 +64,10 @@ library-survivors/
 ├── ui/                        # UI scenes and scripts
 │   ├── HUD.tscn               # [Phase 4] ✅ HP bar, XP bar, level label, run timer
 │   ├── HUD.gd                 # [Phase 4] ✅ Polls player each frame; shows level-up banner
-│   ├── UpgradeDraft.tscn      # [Phase 5] 3-card controller-navigable draft
-│   ├── UpgradeDraft.gd
-│   └── UpgradeCard.tscn       # [Phase 5] Single card: name, desc, rarity, tags
+│   ├── UpgradeDraft.tscn      # [Phase 5] ✅ 3-card controller-navigable draft overlay
+│   ├── UpgradeDraft.gd        # [Phase 5] ✅ Populates cards, emits upgrade_chosen signal
+│   ├── UpgradeCard.tscn       # [Phase 5] ✅ Single card: name, desc, rarity, tags
+│   └── UpgradeCard.gd         # [Phase 5] ✅ Fills card labels from an upgrade dict
 │
 ├── autoload/                  # Singleton scripts (registered in Project Settings)
 │   ├── SaveManager.gd         # [Phase 7] load/write save.json, run summaries
@@ -95,6 +98,26 @@ library-survivors/
 
 ---
 
+## Upgrade Pool (Phase 5 — inline)
+
+| ID              | Name           | Rarity | Effect                     |
+|-----------------|----------------|--------|----------------------------|
+| fleet_footed    | Fleet Footed   | common | move_speed ×1.2            |
+| tough_cover     | Tough Cover    | common | max_hp +25 (+ heal)        |
+| quick_draw      | Quick Draw     | common | fire_rate_mult ×1.25       |
+| sharp_quill     | Sharp Quill    | common | damage_mult ×1.2           |
+| iron_binding    | Iron Binding   | rare   | max_hp +50 (+ heal)        |
+| overdrive       | Overdrive      | rare   | move_speed ×1.4            |
+| rapid_fire      | Rapid Fire     | rare   | fire_rate_mult ×1.5        |
+| ink_surge       | Ink Surge      | rare   | damage_mult ×1.4           |
+| lethal_edition  | Lethal Edition | epic   | damage_mult ×2.0           |
+| overclocked     | Overclocked    | epic   | fire_rate_mult ×2.0        |
+| phantom_step    | Phantom Step   | epic   | move_speed ×1.6            |
+
+> Phase 6 will migrate this pool to `data/upgrades.json` and load it via GameData.
+
+---
+
 ## Build Phases
 
 | # | Phase                          | Status      |
@@ -103,7 +126,7 @@ library-survivors/
 | 2 | Input map + InputHelper        | **Done**    |
 | 3 | Player, Enemy, core Game.tscn  | **Done**    |
 | 4 | XP/Leveling + HUD              | **Done**    |
-| 5 | Upgrade Draft UI               | Pending     |
+| 5 | Upgrade Draft UI               | **Done**    |
 | 6 | Data files + weapon system     | Pending     |
 | 7 | Save system + Results + wire-up| Pending     |
 | 8 | Polish + README sync           | Pending     |

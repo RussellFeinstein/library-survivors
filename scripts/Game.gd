@@ -11,6 +11,8 @@
 #   Enemy     — doesn't preload XpOrb.tscn; it receives the scene + container
 #               from Game → Spawner → Enemy so the orb type is swappable.
 #   HUD       — receives a player reference to poll HP/XP/level each frame.
+#   Draft     — receives a list of upgrade dicts from UpgradeManager; emits
+#               upgrade_chosen when the player picks one.
 extends Node2D
 
 const PROJECTILE_SCENE := preload("res://scenes/Projectile.tscn")
@@ -22,36 +24,25 @@ const XP_ORB_SCENE     := preload("res://scenes/XpOrb.tscn")
 @onready var _projectile_container: Node2D = $ProjectileContainer
 @onready var _xp_orb_container: Node2D    = $XpOrbContainer
 @onready var _enemy_spawner: Node          = $EnemySpawner
-@onready var _hud                          = $HUD   # CanvasLayer with HUD.gd
+@onready var _hud                          = $HUD
+@onready var _upgrade_manager: Node        = $UpgradeManager
+@onready var _upgrade_draft                = $UpgradeDraft
+
+# Guard against a second level-up signal firing while the draft is still open.
+# (Possible if an XP orb contacts the player during the time-scale=0 pause.)
+var _draft_open: bool = false
 
 
 func _ready() -> void:
 	Input.set_custom_mouse_cursor(_make_crosshair(), Input.CURSOR_ARROW, Vector2(16.0, 16.0))
 
 	# ---- Player dependencies ----------------------------------------
-	# projectile_scene: Player._fire() calls .instantiate() on this.
-	#   Null-checked inside Player, so if missing the player just can't fire.
-	#   Game.gd owns the scene so Phase 6 can swap in a weapon-specific scene.
-	# projectile_container: bullets are parented here, NOT under the player —
-	#   if they were children of Player they would move with the player.
 	_player.projectile_scene     = PROJECTILE_SCENE
 	_player.projectile_container = _projectile_container
-	# Signals: Player emits, Game.gd decides what those events cause.
-	#   .died      → route to game-over / results
-	#   .level_up  → pause physics, show upgrade draft (Phase 5), then resume
 	_player.died.connect(_on_player_died)
 	_player.level_up.connect(_on_player_level_up)
 
 	# ---- Spawner dependencies ---------------------------------------
-	# enemy_scene / enemy_container: spawner instantiates and parents enemies;
-	#   Game.gd owns both so the spawner needs zero scene-tree knowledge.
-	# player: spawner places enemies 350–500 px from player.global_position and
-	#   guards with is_instance_valid(player) to stop when the player is gone.
-	# xp_orb_scene / xp_container: injected from Game → Spawner → Enemy.
-	#   Enemy receives them before add_child so it can drop XP in _die().
-	#   Passing the scene rather than preloading in Enemy.gd keeps Enemy
-	#   decoupled — a future elite enemy type could receive a different orb
-	#   scene with zero Enemy.gd changes.
 	_enemy_spawner.enemy_scene     = ENEMY_SCENE
 	_enemy_spawner.enemy_container = _enemy_container
 	_enemy_spawner.player          = _player
@@ -59,8 +50,6 @@ func _ready() -> void:
 	_enemy_spawner.xp_container   = _xp_orb_container
 
 	# ---- HUD --------------------------------------------------------
-	# Give the HUD a player reference so it can poll hp/xp/level each frame
-	# without requiring extra signals on the Player.
 	_hud.set_player(_player)
 
 
@@ -85,14 +74,26 @@ func _on_player_died() -> void:
 
 
 func _on_player_level_up(new_level: int) -> void:
-	# Setting time_scale = 0 freezes all delta-based nodes (physics, _process
-	# with normal delta) so the world is truly paused.
-	# Phase 5 will open the upgrade draft here; for Phase 4 we show a banner
-	# and auto-resume after 1 real second.
+	if _draft_open:
+		return  # skip if a draft is already showing
+	_draft_open = true
+
+	# Freeze the game world (physics + process deltas become 0).
 	Engine.time_scale = 0.0
 	_hud.show_level_up(new_level)
-	# ignore_time_scale = true (4th arg) makes the timer run in real time
-	# even while time_scale = 0, so we don't wait forever.
-	await get_tree().create_timer(1.0, true, false, true).timeout
+
+	# Show 3 random upgrades and wait for the player to pick one.
+	var upgrades := _upgrade_manager.draft(3)
+	_upgrade_draft.setup(upgrades)
+	_upgrade_draft.visible = true
+
+	# await suspends this coroutine until the player presses a card.
+	# UpgradeDraft.gd has process_mode = ALWAYS so it receives input
+	# even while Engine.time_scale = 0.
+	var chosen_id: String = await _upgrade_draft.upgrade_chosen
+
+	_upgrade_draft.visible = false
 	_hud.hide_level_up()
+	_upgrade_manager.apply(chosen_id, _player)
 	Engine.time_scale = 1.0
+	_draft_open = false

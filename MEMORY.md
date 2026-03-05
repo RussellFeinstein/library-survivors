@@ -130,12 +130,30 @@ Key decisions:
 
 ---
 
-### Phase 5 — Upgrade Draft UI 🔲
-**Target files**:
-- `ui/UpgradeDraft.tscn` + `ui/UpgradeDraft.gd`
-- `ui/UpgradeCard.tscn` (sub-scene for each card)
-- 3 cards, left/right D-pad navigation, A to confirm, B blocked (no skip in v1)
-- UpgradeManager.gd: pool filtering (no add_secondary if slots == 3), weighted random draw
+### Phase 5 — Upgrade Draft UI ✅
+**Completed**: 2026-03-05
+
+Files created:
+- `scripts/UpgradeManager.gd` — 11-upgrade inline pool; `draft(count)` shuffles+slices; `apply(id, player)` sets stats via get()/set(); max_hp adds also heal
+- `ui/UpgradeCard.gd` — extends Button; `populate(dict)` fills 4 labels (rarity, name, desc, tags)
+- `ui/UpgradeCard.tscn` — Button root (focus_mode=FOCUS_ALL); StyleBoxFlat styles for normal/hover/focus(overlay)/pressed; MarginContainer + VBoxContainer inside
+- `ui/UpgradeDraft.gd` — extends CanvasLayer; process_mode=ALWAYS; signals `upgrade_chosen(id)`; `setup(upgrades)` populates cards + grabs focus on card 0; card pressed signals connected once in _ready()
+- `ui/UpgradeDraft.tscn` — CanvasLayer layer=20; BgRect (1280×720 dim); CenterContainer (1280×720, centers VBox); TitleLabel + HintLabel + CardsRow (HBoxContainer alignment=CENTER) with 3 Card instances
+
+Files modified:
+- `scripts/Game.gd` — replaced 1-second auto-resume with async draft flow: sets _draft_open guard, shows draft, `await _upgrade_draft.upgrade_chosen`, applies upgrade, resumes time_scale
+- `scenes/Game.tscn` — added UpgradeManager (Node + script) and UpgradeDraft (instanced scene)
+- `project.godot` — version bumped to 0.5.0
+
+Key decisions:
+- **Button as card root** — Godot's UI focus navigation (d-pad/stick) works for free in HBoxContainer sibling buttons; no manual input handling needed
+- **process_mode=ALWAYS on UpgradeDraft** — ensures input events reach the layer while Engine.time_scale=0
+- **_draft_open guard in Game.gd** — XP orb contact can still trigger add_xp() during the 0-timescale pause (collision detection still runs); guard prevents double-draft
+- **await signal pattern** — `await _upgrade_draft.upgrade_chosen` in an async connected function; execution resumes only when player picks, no polling
+- **CanvasLayer children use screen-space pixel offsets**, not anchor-based layout (confirmed gotcha)
+- **focus style = overlay** — Button's "focus" style is drawn on top of normal/hover; use draw_center=false for border-ring-only indicator
+- **Upgrade effects**: `mult` multiplies existing stat; `add` adds to stat (max_hp add also heals same amount)
+- **11 upgrades** across 4 commons, 4 rares, 3 epics covering move_speed, max_hp, fire_rate_mult, damage_mult
 
 ---
 
