@@ -7,8 +7,8 @@ const SPAWN_RADIUS_MAX := 500.0
 const MAX_ENEMIES := 50
 
 var enemy_scene: PackedScene = null
-var enemy_container: Node = null
-var player: Node = null
+var enemy_container: Node2D = null
+var player: Node2D = null
 
 var _spawn_timer: float = 2.0   # grace period before the first spawn
 var _spawn_interval: float = 3.0

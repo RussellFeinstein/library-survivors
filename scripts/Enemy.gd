@@ -11,7 +11,7 @@ var hp: int = 30
 var move_speed: float = 60.0
 var damage: int = 10
 
-var _player: Node = null
+var _player: Node2D = null
 var _contact_cooldown: float = 0.0
 
 
@@ -24,7 +24,7 @@ func _ready() -> void:
 func _find_player() -> void:
 	var players := get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
-		_player = players[0]
+		_player = players[0] as Node2D
 
 
 func _physics_process(delta: float) -> void:
