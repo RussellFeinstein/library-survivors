@@ -10,7 +10,7 @@ const CONTACT_COOLDOWN_MAX := 1.0  # seconds between contact damage applications
 var hp: int = 30
 var move_speed: float = 60.0
 var damage: int = 10
-var xp_value: int = 1
+var xp_value: int = 3
 
 # Set by EnemySpawner before adding to the scene tree (Phase 4).
 var xp_orb_scene: PackedScene = null
