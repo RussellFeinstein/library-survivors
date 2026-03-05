@@ -10,6 +10,10 @@ var enemy_scene: PackedScene = null
 var enemy_container: Node2D = null
 var player: Node2D = null
 
+# Phase 4: set by Game.gd so each spawned enemy can drop an XP orb.
+var xp_orb_scene: PackedScene = null
+var xp_container: Node2D = null
+
 var _spawn_timer: float = 2.0   # grace period before the first spawn
 var _spawn_interval: float = 3.0
 var _elapsed: float = 0.0
@@ -39,4 +43,6 @@ func _spawn_enemy() -> void:
 	var spawn_pos := player.global_position + Vector2(cos(angle), sin(angle)) * dist
 	var enemy: Node2D = enemy_scene.instantiate()
 	enemy.global_position = spawn_pos
+	enemy.xp_orb_scene = xp_orb_scene
+	enemy.xp_container = xp_container
 	enemy_container.add_child(enemy)

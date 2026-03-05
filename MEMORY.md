@@ -102,17 +102,31 @@ Key decisions made this phase:
 
 ---
 
-### Phase 4 — XP / Leveling + HUD 🔲
-**Target files**:
-- `scripts/XpOrb.gd` — Area2D, moves toward player if within pickup_radius, grants XP on collect
-- `ui/HUD.tscn` + `ui/HUD.gd` — HP bar, level label, XP bar, run timer, crown/seal count
-- XP curve: `xp_to_next = 10 + (level * 5)` (simple linear, easy to tune)
-- On level up: emit `level_up` signal → pause tree (Engine.time_scale = 0) → open draft
+### Phase 4 — XP / Leveling + HUD ✅
+**Completed**: 2026-03-05
 
-**Hook points already in Phase 3**:
-- `Enemy._die()` — add XP orb spawn here
-- `Player.took_damage` signal — connect to HUD HP bar update
-- `Player.died` signal — already consumed by Game.gd
+Files created:
+- `scripts/XpOrb.gd` — Area2D, pickup_radius=100px (var, upgrade-modifiable), move_speed=180px/s, no auto-despawn
+- `scenes/XpOrb.tscn` — collision_layer=8 (layer 4), collision_mask=1 (Player only), r=6 circle
+- `ui/HUD.gd` — polls player each frame for HP/XP/level; process_mode=ALWAYS; run timer stops at time_scale=0
+- `ui/HUD.tscn` — VBoxContainer (TopRow: HpBar + Spacer + LevelLabel + TimerLabel; XpBar below) + LevelUpLabel
+
+Files modified:
+- `scripts/Player.gd` — added xp, level, xp_to_next, level_up signal, add_xp(); xp_value=1 per enemy
+- `scripts/Enemy.gd` — added xp_value=1, xp_orb_scene/xp_container vars, orb spawn in _die()
+- `scripts/EnemySpawner.gd` — added xp_orb_scene/xp_container; injects both into each spawned enemy
+- `scripts/Game.gd` — preloads XpOrb; adds $XpOrbContainer + $HUD; connects level_up signal
+- `scenes/Game.tscn` — added XpOrbContainer (Node2D) and HUD (PackedScene instance)
+
+Key decisions:
+- **XP orbs never despawn** — they persist until collected; no lifetime limit
+- **pickup_radius and move_speed are vars** so upgrade effects can modify them without code changes
+- **Dependency injection** — Enemy receives xp_orb_scene + xp_container from Game→Spawner→Enemy rather than preloading directly; keeps Enemy decoupled and allows different orb types per enemy class
+- **HUD polling vs signals** — HUD reads player.hp/xp/level in _process (no extra signals); low overhead for 3 values
+- **Level-up pause flow** — Game.gd sets Engine.time_scale=0, shows banner, waits 1 real second (ignore_time_scale=true), then resumes; Phase 5 replaces the 1s wait with the upgrade draft
+- **XP curve** — `xp_to_next = 10 + level * 5`; level 1→2 costs 15, 2→3 costs 20, etc.
+- **XP per enemy** — 1 XP (changed from initial 5 to keep early leveling tied to kill count, not cherry-picking)
+- **Collision layer 4** — XpOrb uses layer 8 (bit 4); mask=1 (Player only)
 
 ---
 

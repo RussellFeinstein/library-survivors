@@ -39,28 +39,29 @@ library-survivors/
 │
 ├── scenes/                    # .tscn scene files
 │   ├── MainMenu.tscn          # [Phase 3] ✅ Start Run, Quit — controller navigable
-│   ├── Game.tscn              # [Phase 3] ✅ Core gameplay root
+│   ├── Game.tscn              # [Phase 4] ✅ Core gameplay root (+ XpOrbContainer, HUD)
 │   ├── Enemy.tscn             # [Phase 3] ✅ Enemy scene (instanced by EnemySpawner)
 │   ├── Projectile.tscn        # [Phase 3] ✅ Projectile scene (instanced by Player)
+│   ├── XpOrb.tscn             # [Phase 4] ✅ XP orb scene (dropped by enemies on death)
 │   └── Results.tscn           # [Phase 7] Win/lose + rewards
 │
 ├── scripts/                   # GDScript files (logic only, no scene nodes)
 │   ├── InputHelper.gd         # [Phase 2] ✅ Move/aim/confirm helpers (autoload)
 │   ├── MainMenu.gd            # [Phase 3] ✅ Menu button wiring
-│   ├── Game.gd                # [Phase 3] ✅ Wires Player ↔ Spawner, handles game-over
-│   ├── Player.gd              # [Phase 3] ✅ Movement, HP, primary fire
-│   ├── Enemy.gd               # [Phase 3] ✅ Chase AI, contact damage, death
+│   ├── Game.gd                # [Phase 4] ✅ Wires all systems, handles game-over + level-up
+│   ├── Player.gd              # [Phase 4] ✅ Movement, HP, primary fire, XP/leveling
+│   ├── Enemy.gd               # [Phase 4] ✅ Chase AI, contact damage, death, XP drop
 │   ├── Projectile.gd          # [Phase 3] ✅ Travel, pierce, hit detection
-│   ├── EnemySpawner.gd        # [Phase 3] ✅ Timed spawning around player
-│   ├── XpOrb.gd               # [Phase 4] Pickup radius, XP grant
+│   ├── EnemySpawner.gd        # [Phase 4] ✅ Timed spawning; injects orb scene/container
+│   ├── XpOrb.gd               # [Phase 4] ✅ Homing pickup, XP grant on contact
 │   ├── UpgradeManager.gd      # [Phase 5] Draft pool logic, effect application
 │   ├── WeaponPrimary.gd       # [Phase 6] Data-driven primary weapon
 │   ├── WeaponSecondary.gd     # [Phase 6] Data-driven secondary weapon (auto)
 │   └── RunState.gd            # [Phase 7] Seed, timer, currency tallying
 │
 ├── ui/                        # UI scenes and scripts
-│   ├── HUD.tscn               # [Phase 4] HP, level, XP bar, timer, currencies
-│   ├── HUD.gd
+│   ├── HUD.tscn               # [Phase 4] ✅ HP bar, XP bar, level label, run timer
+│   ├── HUD.gd                 # [Phase 4] ✅ Polls player each frame; shows level-up banner
 │   ├── UpgradeDraft.tscn      # [Phase 5] 3-card controller-navigable draft
 │   ├── UpgradeDraft.gd
 │   └── UpgradeCard.tscn       # [Phase 5] Single card: name, desc, rarity, tags
@@ -90,6 +91,7 @@ library-survivors/
 | 1     | 1     | Player             |
 | 2     | 2     | Enemies            |
 | 3     | 4     | Player projectiles |
+| 4     | 8     | XP orbs            |
 
 ---
 
@@ -100,7 +102,7 @@ library-survivors/
 | 1 | Project skeleton + repo        | **Done**    |
 | 2 | Input map + InputHelper        | **Done**    |
 | 3 | Player, Enemy, core Game.tscn  | **Done**    |
-| 4 | XP/Leveling + HUD              | Pending     |
+| 4 | XP/Leveling + HUD              | **Done**    |
 | 5 | Upgrade Draft UI               | Pending     |
 | 6 | Data files + weapon system     | Pending     |
 | 7 | Save system + Results + wire-up| Pending     |

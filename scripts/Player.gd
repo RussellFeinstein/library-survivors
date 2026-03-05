@@ -1,5 +1,5 @@
 # scripts/Player.gd
-# CharacterBody2D: player movement (via InputHelper), primary fire, and HP.
+# CharacterBody2D: player movement (via InputHelper), primary fire, HP, and XP/leveling.
 #
 # All stats are public vars so Game.gd (and later GameData) can override them
 # when applying a character definition. For Phase 3 the defaults match the
@@ -8,6 +8,7 @@ extends CharacterBody2D
 
 signal died
 signal took_damage(amount: int)
+signal level_up(new_level: int)
 
 # ---- Stats (set from outside before first physics tick) ----
 var max_hp: int = 100
@@ -18,6 +19,13 @@ var fire_rate_mult: float = 1.0
 ## Base seconds between shots. Actual cooldown = base_fire_cooldown / fire_rate_mult.
 ## Phase 6: set this from the primary weapon definition loaded by GameData.
 var base_fire_cooldown: float = 0.4
+
+# ---- XP / Leveling ----
+var xp: int = 0
+var level: int = 1
+## XP needed to reach the next level. Formula: 10 + level * 5
+## (level 1→2 costs 15, level 2→3 costs 20, …)
+var xp_to_next: int = 15
 
 # ---- Dependencies (set by Game.gd before first physics tick) ----
 var projectile_scene: PackedScene = null
@@ -67,6 +75,15 @@ func take_damage(amount: int) -> void:
 		_die()
 
 
+func add_xp(amount: int) -> void:
+	xp += amount
+	# A single pickup can cross multiple level thresholds (unlikely but handled).
+	while xp >= xp_to_next:
+		xp -= xp_to_next
+		level += 1
+		xp_to_next = 10 + level * 5
+		emit_signal("level_up", level)
+
+
 func _die() -> void:
-	# Phase 4+: play death animation, freeze input, etc. before emitting.
 	emit_signal("died")
