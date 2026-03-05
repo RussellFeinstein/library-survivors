@@ -83,9 +83,9 @@ func _on_player_level_up(new_level: int) -> void:
 	_hud.show_level_up(new_level)
 
 	# Show 3 random upgrades and wait for the player to pick one.
-	var upgrades := _upgrade_manager.draft(3)
-	_upgrade_draft.setup(upgrades)
+	var upgrades: Array = _upgrade_manager.draft(3)
 	_upgrade_draft.visible = true
+	_upgrade_draft.setup(upgrades)
 
 	# await suspends this coroutine until the player presses a card.
 	# UpgradeDraft.gd has process_mode = ALWAYS so it receives input

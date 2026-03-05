@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Library Survivors"
 config/description="A top-down 2D survivors-like prototype with a library theme."
-config/version="0.5.0"
+config/version="0.5.1"
 run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/godot_version="4.6.1.stable"
