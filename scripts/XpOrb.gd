@@ -4,8 +4,8 @@
 # pickup_radius and move_speed are vars so upgrades can modify them at runtime.
 extends Area2D
 
-var pickup_radius: float = 100.0   # px — start homing once player is this close
-var move_speed: float    = 180.0   # px/s — speed when homing toward player
+var pickup_radius: float = 400.0   # px — start homing once player is this close
+var move_speed: float    = 180.0   # px/s — base speed when homing toward player
 
 var xp_value: int = 1
 
@@ -28,10 +28,13 @@ func _process(delta: float) -> void:
 	if _player == null or not is_instance_valid(_player):
 		return
 
+	# Causes XP Orbs to accelerate
 	var dist := global_position.distance_to(_player.global_position)
 	if dist <= pickup_radius:
 		var dir := (_player.global_position - global_position).normalized()
-		global_position += dir * move_speed * delta
+		var t := 1.0 - (dist / pickup_radius)          # 0 at edge, 1 at player
+		var speed := move_speed * (1.0 + t * 4.0)      # up to 5× speed at contact
+		global_position += dir * speed * delta
 
 
 func _on_body_entered(body: Node2D) -> void:
