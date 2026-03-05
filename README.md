@@ -8,7 +8,7 @@ A top-down 2D survivors-like prototype built in **Godot 4.x** with a library the
 2. Open Godot, click **Import**, select this folder's `project.godot`
 3. Press **F5** (or the Play button) to run
 
-> Main scene: `res://scenes/MainMenu.tscn` (not yet implemented — see Phase tracker below)
+> Main scene: `res://scenes/MainMenu.tscn` → **Start Run** launches `Game.tscn`
 
 ---
 
@@ -23,9 +23,9 @@ A top-down 2D survivors-like prototype built in **Godot 4.x** with a library the
 | Cancel (UI)    | Escape                | B (East button)         |
 | Pause          | Escape / P            | Start                   |
 
-> Aim approach: right stick is checked first; if its magnitude < 0.15 (deadzone), aim falls back to mouse-to-player direction. Documented in `scripts/InputHelper.gd` (Phase 2).
+> Aim: right stick is checked first; if magnitude < 0.15 (deadzone), falls back to mouse-to-player direction.
 
-> Fire mode: **hold-to-fire** — primary weapon fires continuously while the fire input is held and the cooldown has elapsed.
+> Fire mode: **hold-to-fire** — primary weapon fires continuously while held and cooldown has elapsed.
 
 ---
 
@@ -38,15 +38,20 @@ library-survivors/
 ├── MEMORY.md                  # Project phase tracker / dev notes
 │
 ├── scenes/                    # .tscn scene files
-│   ├── MainMenu.tscn          # [Phase 3] Start Run, Quit
-│   ├── Game.tscn              # [Phase 3] Core gameplay
+│   ├── MainMenu.tscn          # [Phase 3] ✅ Start Run, Quit — controller navigable
+│   ├── Game.tscn              # [Phase 3] ✅ Core gameplay root
+│   ├── Enemy.tscn             # [Phase 3] ✅ Enemy scene (instanced by EnemySpawner)
+│   ├── Projectile.tscn        # [Phase 3] ✅ Projectile scene (instanced by Player)
 │   └── Results.tscn           # [Phase 7] Win/lose + rewards
 │
 ├── scripts/                   # GDScript files (logic only, no scene nodes)
-│   ├── InputHelper.gd         # [Phase 2] Move/aim/confirm helpers
-│   ├── Player.gd              # [Phase 3] Movement, HP, weapon dispatch
-│   ├── Enemy.gd               # [Phase 3] Movement toward player, contact damage
-│   ├── Projectile.gd          # [Phase 3] Travel, hit, pierce logic
+│   ├── InputHelper.gd         # [Phase 2] ✅ Move/aim/confirm helpers (autoload)
+│   ├── MainMenu.gd            # [Phase 3] ✅ Menu button wiring
+│   ├── Game.gd                # [Phase 3] ✅ Wires Player ↔ Spawner, handles game-over
+│   ├── Player.gd              # [Phase 3] ✅ Movement, HP, primary fire
+│   ├── Enemy.gd               # [Phase 3] ✅ Chase AI, contact damage, death
+│   ├── Projectile.gd          # [Phase 3] ✅ Travel, pierce, hit detection
+│   ├── EnemySpawner.gd        # [Phase 3] ✅ Timed spawning around player
 │   ├── XpOrb.gd               # [Phase 4] Pickup radius, XP grant
 │   ├── UpgradeManager.gd      # [Phase 5] Draft pool logic, effect application
 │   ├── WeaponPrimary.gd       # [Phase 6] Data-driven primary weapon
@@ -78,13 +83,23 @@ library-survivors/
 
 ---
 
+## Collision Layers
+
+| Layer | Value | Used by            |
+|-------|-------|--------------------|
+| 1     | 1     | Player             |
+| 2     | 2     | Enemies            |
+| 3     | 4     | Player projectiles |
+
+---
+
 ## Build Phases
 
 | # | Phase                          | Status      |
 |---|--------------------------------|-------------|
 | 1 | Project skeleton + repo        | **Done**    |
 | 2 | Input map + InputHelper        | **Done**    |
-| 3 | Player, Enemy, core Game.tscn  | Pending     |
+| 3 | Player, Enemy, core Game.tscn  | **Done**    |
 | 4 | XP/Leveling + HUD              | Pending     |
 | 5 | Upgrade Draft UI               | Pending     |
 | 6 | Data files + weapon system     | Pending     |
