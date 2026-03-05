@@ -7,7 +7,7 @@ Update it at the end of every phase. It is NOT a user-facing doc.
 
 ## Project Identity
 
-- **Engine**: Godot 4.3+ (GL Compatibility renderer, 2D)
+- **Engine**: Godot 4.6+ (GL Compatibility renderer, 2D)
 - **Genre**: Survivors-like (top-down, auto-combat, upgrade drafting)
 - **Theme**: Library (currencies: Crowns + Seals; tags: library-themed)
 - **Run length**: 20 minutes max

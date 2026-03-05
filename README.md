@@ -4,7 +4,7 @@ A top-down 2D survivors-like prototype built in **Godot 4.x** with a library the
 
 ## How to Run
 
-1. Install [Godot 4.3+](https://godotengine.org/download)
+1. Install [Godot 4.6+](https://godotengine.org/download)
 2. Open Godot, click **Import**, select this folder's `project.godot`
 3. Press **F5** (or the Play button) to run
 
