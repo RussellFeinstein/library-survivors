@@ -7,7 +7,7 @@ extends Area2D
 var pickup_radius: float = 100.0   # px — start homing once player is this close
 var move_speed: float    = 180.0   # px/s — speed when homing toward player
 
-var xp_value: int = 5
+var xp_value: int = 1
 
 var _player: Node2D = null
 

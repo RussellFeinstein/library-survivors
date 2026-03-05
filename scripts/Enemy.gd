@@ -61,6 +61,7 @@ func take_damage(amount: int) -> void:
 func _die() -> void:
 	if xp_orb_scene != null and xp_container != null:
 		var orb: Node2D = xp_orb_scene.instantiate()
+		orb.xp_value = xp_value
 		orb.global_position = global_position
 		xp_container.add_child(orb)
 	queue_free()
