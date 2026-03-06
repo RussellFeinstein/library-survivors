@@ -5,6 +5,15 @@
 extends Button
 
 
+func _ready() -> void:
+	mouse_entered.connect(grab_focus)
+
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		grab_focus()
+
+
 @onready var _rarity_label: Label = $MarginContainer/VBoxContainer/RarityLabel
 @onready var _name_label: Label   = $MarginContainer/VBoxContainer/NameLabel
 @onready var _desc_label: Label   = $MarginContainer/VBoxContainer/DescLabel

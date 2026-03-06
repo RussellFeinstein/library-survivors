@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://upgcard0001"]
+[gd_scene load_steps=4 format=3 uid="uid://upgcard0001"]
 
 [ext_resource type="Script" path="res://ui/UpgradeCard.gd" id="1_card"]
 
@@ -19,26 +19,12 @@ content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
 
-; Hover state: slightly brighter.
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hover"]
-bg_color = Color(0.18, 0.18, 0.22, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.55, 0.55, 0.62, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
 
-; Focus ring: transparent center, gold border — drawn on top of normal/hover.
+; Focus: hover background + gold border, drawn on top of normal/hover.
+; Opaque so controller/keyboard focus looks identical to mouse hover.
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_focus"]
-draw_center = false
+draw_center = true
+bg_color = Color(0.18, 0.18, 0.22, 1)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
@@ -71,7 +57,7 @@ custom_minimum_size = Vector2(240, 190)
 focus_mode = 2
 clip_contents = true
 theme_override_styles/normal = SubResource("StyleBoxFlat_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_normal")
 theme_override_styles/focus = SubResource("StyleBoxFlat_focus")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_pressed")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_normal")
